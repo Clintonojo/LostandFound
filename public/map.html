@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost and Found Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        .navbar {
+            background-color: #4CAF50;
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-list {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-item {
+            margin: 0 15px;
+        }
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        #map-container {
+            margin-top: 50px; /* Adjust for the navbar */
+            height: calc(100vh - 50px); /* Full height minus the navbar height */
+        }
+    </style>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li class="nav-item"><a href="home.html">Home</a></li>
+            <li class="nav-item"><a href="map.html">View Map</a></li>
+            <li class="nav-item"><a href="submit-item.html">Submit Item</a></li>
+            <li class="nav-item"><a href="security_questions.html">Prompt Page</a></li>
+           
+        </ul>
+    </nav>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
+

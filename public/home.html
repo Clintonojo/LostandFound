@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost and Found - Home</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your custom CSS -->
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; /* Light gray background */
+            color: #333;
+            padding-top: 70px;
+        }
+        .navbar {
+            background-color: green;
+        }
+        .navbar .nav-item a {
+            color: white !important;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .navbar .nav-item a:hover {
+            color: #ffcc00 !important; /* Bright yellow on hover */
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: green;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .features-list {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        .features-list li {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: green;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Lost & Found</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="map.html">View Map</a></li>
+                    <li class="nav-item"><a class="nav-link" href="submit-item.html">Submit Found Item</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my-account.html">My Account</a></li>
+                    <li class="nav-item"><a class="nav-link" href="logout.html">Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="security_questions.html">Prompt/SecurityQuestions</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Welcome to the Lost and Found App</h1>
+        <p>This platform helps you manage lost and found items efficiently. Here’s how it works:</p>
+        
+        <div class="features-list p-4">
+            <ul class="list-unstyled">
+                <li><strong>View Map:</strong> Check the map to see reported lost and found items.</li>
+                <li><strong>Submit Found Item:</strong> Report an item you’ve found and provide details and location.</li>
+                <li><strong>My Account:</strong> Manage your account settings and view your activity.</li>
+                <li><strong>SecurityQuestions</strong>Use This website to help bulid security questions</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Lost and Found App &copy; 2024. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JavaScript and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+

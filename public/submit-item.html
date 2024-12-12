@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Lost Item</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li class="nav-item"><a href="home.html">Home</a></li>
+            <li class="nav-item"><a href="map.html">View Map</a></li>
+            <li class="nav-item"><a href="submit-item.html">Submit Item</a></li>
+            <li class="nav-item"><a href="security_questions.html">Prompt Page</a></li>
+        </ul>
+    </nav>
+
+    <div class="form-container">
+        <h2>Submit a Found Item</h2>
+        <form id="itemForm">
+            <div class="input-group">
+                <label for="itemName">Item Name</label>
+                <input type="text" id="itemName" name="itemName" required>
+            </div>
+            <div class="input-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="input-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="locationSearch">Search Location</label>
+                <input type="text" id="locationSearch" placeholder="Search for a location" />
+                <button type="button" id="searchButton">Search</button>
+            </div>
+            <div class="input-group">
+                <label for="location">Latitude, Longitude</label>
+                <input type="text" id="location" name="location" required readonly>
+            </div>
+            <div class="input-group">
+                <h3>Security Questions</h3>
+                <label for="question1">Question 1</label>
+                <input type="text" id="question1" name="question1" required>
+                <label for="answer1">Answer 1</label>
+                <input type="text" id="answer1" name="answer1" required>
+
+                <label for="question2">Question 2</label>
+                <input type="text" id="question2" name="question2" required>
+                <label for="answer2">Answer 2</label>
+                <input type="text" id="answer2" name="answer2" required>
+
+                <label for="question3">Question 3</label>
+                <input type="text" id="question3" name="question3" required>
+                <label for="answer3">Answer 3</label>
+                <input type="text" id="answer3" name="answer3" required>
+            </div>
+            <button type="submit" class="submit-button">Submit Item</button>
+        </form>
+    </div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Internal CSS for the Navigation Bar -->
+    <style>
+        .navbar {
+            background-color: #4CAF50;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-list {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-item {
+            margin: 0 15px; 
+        }
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            transition: color 0.3s; 
+        }
+        .nav-item a:hover {
+            color: #f1f1f1; 
+        }
+        body {
+            margin-top: 60px;
+        }
+    </style>
+</body>
+</html>
+
+

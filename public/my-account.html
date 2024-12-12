@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-header img {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            margin-right: 20px;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+            color: gray;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tab.active {
+            background: #0056b3;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .item-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .item-list li {
+            padding: 10px;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .item-list li h3 {
+            margin: 0 0 5px;
+            font-size: 18px;
+        }
+
+        .item-list li p {
+            margin: 0;
+            color: gray;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>My Account</h1>
+    </header>
+
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <img src="default-profile.png" alt="Profile Picture">
+            <div class="profile-info">
+                <h2 id="username">Loading...</h2>
+                <p id="email">Loading...</p>
+                <button onclick="logoutUser()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('claims')">My Claims</div>
+            <div class="tab" onclick="showTab('submitted')">Submitted Items</div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="claims" class="tab-content active">
+            <h3>My Claims</h3>
+            <ul class="item-list" id="claims-list">
+                <li>Loading...</li>
+            </ul>
+        </div>
+
+        <div id="submitted" class="tab-content">
+            <h3>Submitted Items</h3>
+            <ul class="item-list" id="submitted-list">
+                <li>Loading...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Function to switch between tabs
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Function to load user information
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/user-info');
+                if (!response.ok) throw new Error('Failed to load user info');
+                const userInfo = await response.json();
+
+                document.getElementById('username').textContent = userInfo.username;
+                document.getElementById('email').textContent = userInfo.email;
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                alert('Error loading user information.');
+            }
+        }
+
+        // Function to load claims
+        async function loadClaims() {
+            try {
+                const response = await fetch('/user-claims');
+                if (!response.ok) throw new Error('Failed to load claims');
+                const claims = await response.json();
+
+                const claimsList = document.getElementById('claims-list');
+                claimsList.innerHTML = '';
+                claims.forEach(claim => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <h3>${claim.name}</h3>
+                        <p>${claim.description}</p>
+                        <p><strong>Status:</strong> ${claim.status}</p>
+                    `;
+                    claimsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading claims:', error);
+                alert('Error loading claims.');
+            }
+        }
+
+        // Function to load submitted items
+        async function loadSubmittedItems() {
+            try {
+                const response = await fetch('/user-submitted-items');
+                if (!response.ok) throw new Error('Failed to load submitted items');
+                const items = await response.json();
+
+                const submittedList = document.getElementById('submitted-list');
+                submittedList.innerHTML = '';
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <p><strong>Status:</strong> ${item.status}</p>
+                    `;
+                    submittedList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading submitted items:', error);
+                alert('Error loading submitted items.');
+            }
+        }
+
+        // Logout function
+        function logoutUser() {
+            alert('You have been logged out.');
+            window.location.href = 'login.html';
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadClaims();
+            loadSubmittedItems();
+        });
+    </script>
+</body>
+</html>
