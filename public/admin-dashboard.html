@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        .dashboard-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .item-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-card h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .item-card p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Lost & Found</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="map.html">View Map</a></li>
+                    <li class="nav-item"><a class="nav-link" href="submit-item.html">Submit Found Item</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my-account.html">My Account</a></li>
+                    <li class="nav-item"><a class="nav-link" href="security_questions.html">Prompt/Security Questions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin.html">Admin Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="logout.html">Logout</a></li>
+                    <
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Add some spacing to account for the fixed navbar -->
+    <div style="margin-top: 70px;"></div>
+
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h1>Admin Login</h1>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p id="errorMessage" class="text-danger text-center mt-3" style="display: none;">Invalid username or password</p>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboardContainer" class="dashboard-container" style="display: none;">
+        <h1>Admin Dashboard</h1>
+        <div id="adminItems"></div>
+        <button onclick="logoutAdmin()" class="btn btn-secondary">Logout</button>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Hardcoded credentials
+        const adminCredentials = {
+            username: 'admin',
+            password: 'admin1'
+        };
+
+        // Check if the admin is logged in
+        if (localStorage.getItem('isAdminLoggedIn') === 'true') {
+            showDashboard();
+        }
+
+        // Handle login form submission
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === adminCredentials.username && password === adminCredentials.password) {
+                // Save login status in localStorage
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                showDashboard();
+            } else {
+                // Show error message
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        // Show the dashboard and hide the login form
+        function showDashboard() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+            loadAdminItems();
+        }
+
+        // Handle logout
+        function logoutAdmin() {
+            localStorage.removeItem('isAdminLoggedIn');
+            location.reload();
+        }
+
+        // Load admin items
+        async function loadAdminItems() {
+            const response = await fetch('/items');
+            const items = await response.json();
+            const container = document.getElementById('adminItems');
+            if (items.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">No items found.</p>';
+                return;
+            }
+            container.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <p><strong>Location:</strong> ${item.latitude}, ${item.longitude}</p>
+                    <p><strong>Phone:</strong> ${item.phone_number}</p>
+                    <button onclick="deleteItem(${item.id})" class="btn btn-danger btn-sm">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Delete an item
+        async function deleteItem(id) {
+            const response = await fetch(`/delete-item/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                alert('Item deleted successfully');
+                loadAdminItems();
+            } else {
+                alert('Failed to delete item');
+            }
+        }
+    </script>
+</body>
+</html>

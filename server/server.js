@@ -1,6 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -15,11 +16,12 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 
 // Database connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Home1234?', // Replace with your actual database password
-    database: 'lost_and_found'
+    host: process.env.DB_HOST, // Use environment variables
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
+
 
 db.connect(err => {
     if (err) {
@@ -31,7 +33,7 @@ db.connect(err => {
 
 // Root route to serve 'index.html'
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Corrected path to index.html
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // User Registration Endpoint
@@ -113,11 +115,18 @@ app.post('/submit-item', (req, res) => {
     });
 });
 
- // Endpoint to get all submitted items and their security questions
+// Endpoint to fetch all items with security questions
 app.get('/items', (req, res) => {
     const sql = `
-        SELECT items.id, items.name, items.description, items.latitude, items.longitude, items.phone_number,
-               security_questions.question, security_questions.answer
+        SELECT 
+            items.id, 
+            items.name, 
+            items.description, 
+            items.latitude, 
+            items.longitude, 
+            items.phone_number,
+            security_questions.question, 
+            security_questions.answer
         FROM items
         LEFT JOIN security_questions ON items.id = security_questions.item_id
     `;
@@ -127,7 +136,7 @@ app.get('/items', (req, res) => {
             return res.status(500).send('Error fetching items');
         }
 
-        // Organize items with their security questions
+        // Group items by their ID and include security questions
         const itemsMap = {};
         results.forEach(row => {
             if (!itemsMap[row.id]) {
@@ -141,7 +150,6 @@ app.get('/items', (req, res) => {
                     securityQuestions: []
                 };
             }
-            // Push security questions only if they exist
             if (row.question && row.answer) {
                 itemsMap[row.id].securityQuestions.push({
                     question: row.question,
@@ -150,65 +158,47 @@ app.get('/items', (req, res) => {
             }
         });
 
-        // Convert items map to an array
+        // Convert the items map to an array
         const items = Object.values(itemsMap);
         res.json(items);
     });
 });
-app.post('/logout', (req, res) => {
-    // Destroy the session (if using Express sessions)
-    req.session.destroy(err => {
+
+// Endpoint to delete an item by ID
+app.delete('/delete-item/:id', (req, res) => {
+    const itemId = req.params.id;
+
+    const deleteItemSql = 'DELETE FROM items WHERE id = ?';
+    const deleteQuestionsSql = 'DELETE FROM security_questions WHERE item_id = ?';
+
+    // First, delete the security questions associated with the item
+    db.query(deleteQuestionsSql, [itemId], (err) => {
         if (err) {
-            console.error('Failed to destroy session:', err);
-            res.status(500).send('Error logging out');
-        } else {
-            res.clearCookie('connect.sid'); // Clear session cookie
-            res.status(200).send('Logged out successfully');
+            console.error('Error deleting security questions:', err);
+            return res.status(500).send('Error deleting security questions');
         }
+
+        // Then, delete the item itself
+        console.log('Deleting item with ID:', itemId);
+        db.query(deleteItemSql, [itemId], (err) => {
+            if (err) {
+                console.error('Error deleting item:', err);
+                return res.status(500).send('Error deleting item');
+            }
+
+            res.send('Item deleted successfully');
+        });
     });
 });
-
-
-// Mock user data
-const userInfo = {
-    username: "John Doe",
-    email: "john.doe@example.com"
-};
-
-const userClaims = [
-    { name: "Wallet", description: "Black wallet", status: "Pending" },
-    { name: "Keys", description: "Car keys", status: "Claimed" }
-];
-
-const userSubmittedItems = [
-    { name: "Bag", description: "Blue backpack", status: "Awaiting Claim" },
-    { name: "Glasses", description: "Prescription glasses", status: "Claimed" }
-];
-
-// Endpoint to get user info
-app.get('/user-info', (req, res) => {
-    res.json(userInfo);
-});
-
-// Endpoint to get user claims
-app.get('/user-claims', (req, res) => {
-    res.json(userClaims);
-});
-
-// Endpoint to get user submitted items
-app.get('/user-submitted-items', (req, res) => {
-    res.json(userSubmittedItems);
-});
-
-
-
-app.get('/security-questions', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'security_questions.html'));
-});
-
 
 // Start server
 const PORT = 4000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// Export the app and a function to close the database connection
+module.exports = {
+    app,
+    closeDatabase: () => db.end()
+};

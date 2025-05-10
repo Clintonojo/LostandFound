@@ -97,12 +97,13 @@ let submittedItems = [];
 const markers = {}; // Dictionary to store markers with custom IDs
 
 // Initialize the Leaflet map
+let map; // Declare globally
 if (window.location.pathname.endsWith('map.html')) {
-    const map = L.map('map').setView([53.6100, -6.1900], 13);
+    map = L.map('map').setView([53.6100, -6.1900], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '© OpenStreetMap contributors'
+        attribution: '© OpenStreetMap contributors',
     }).addTo(map);
 
     // Load items from the server and populate markers
@@ -140,7 +141,8 @@ if (window.location.pathname.endsWith('map.html')) {
     loadMarkers();
 }
 
-window.showQuestions = function(lat, lng, markerIndex) {
+// Function to show security questions and handle item claiming
+window.showQuestions = async function (lat, lng, markerIndex) {
     console.log('Attempting to claim item at:', lat, lng);
 
     const item = submittedItems.find(item => item.latitude === lat && item.longitude === lng);
@@ -172,26 +174,42 @@ window.showQuestions = function(lat, lng, markerIndex) {
 
     if (allCorrect) {
         alert(`Correct! You can contact the owner at: ${item.phone_number}`);
+        sendNotification('Item Claimed', `The item "${item.name}" has been claimed.`);
 
-        // Remove the marker using the markers dictionary
-        const marker = markers[markerIndex];
-        if (marker) {
-            map.removeLayer(marker);
-            console.log('Marker removed successfully:', marker);
-        } else {
-            console.error('Marker to remove not found!');
+        // Send a request to delete the item from the database
+        try {
+            const response = await fetch(`/delete-item/${item.id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                alert('Item successfully claimed and removed from the database.');
+
+                // Remove the marker from the map
+                const marker = markers[markerIndex];
+                if (marker) {
+                    map.removeLayer(marker);
+                    console.log('Marker removed successfully:', marker);
+                } else {
+                    console.error('Marker to remove not found!');
+                }
+
+                // Remove the item from the local array
+                submittedItems = submittedItems.filter(i => i !== item);
+                console.log('Item claimed and marker removed:', item);
+            } else {
+                console.error('Failed to delete item from the database');
+                alert('Failed to delete item from the database. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            alert('An error occurred while deleting the item. Please try again.');
         }
-
-        submittedItems = submittedItems.filter(i => i !== item);
-        console.log('Item claimed and marker removed:', item);
     } else {
         alert('Incorrect answers. Please try again.');
         console.log('Incorrect answers for item:', item);
     }
-}
-
-
-
+};
 
 
 // Handle item submission form
@@ -201,6 +219,7 @@ document.getElementById('itemForm')?.addEventListener('submit', async (e) => {
     const description = document.getElementById('description').value;
     const phoneNumber = document.getElementById('phoneNumber').value;
     const location = document.getElementById('location').value;
+    const category = document.getElementById('category').value; // Get the selected category
     const [lat, lng] = location.split(',').map(Number);
 
     const securityQuestions = [
@@ -209,14 +228,11 @@ document.getElementById('itemForm')?.addEventListener('submit', async (e) => {
         { question: document.getElementById('question3').value, answer: document.getElementById('answer3').value }
     ];
 
-    submittedItems.push({ itemName, description, phoneNumber, lat, lng, securityQuestions });
-    console.log('Submitting item:', { itemName, description, phoneNumber, lat, lng, securityQuestions });
-
-    try {let markerToRemove;
+    try {
         const response = await fetch('/submit-item', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemName, description, lat, lng, phoneNumber, securityQuestions })
+            body: JSON.stringify({ itemName, description, lat, lng, phoneNumber, category, securityQuestions })
         });
 
         if (response.ok) {
@@ -260,4 +276,17 @@ document.getElementById('searchButton')?.addEventListener('click', async () => {
         alert('An error occurred while searching for the location. Please try again.');
     }
 });
+
+
+
+// Notification handling
+if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission();
+}
+
+function sendNotification(title, body) {
+    if (Notification.permission === 'granted') {
+        new Notification(title, { body });
+    }
+}
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        #errorMessage {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Admin Login</h1>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p id="errorMessage" class="text-danger text-center mt-3">Invalid username or password</p>
+    </div>
+
+    <script>
+        // Ensure the script runs after the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('adminLoginForm');
+            const errorMessage = document.getElementById('errorMessage');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                // Hardcoded credentials
+                if (username === 'admin' && password === 'admin1') {
+                    // Save login status in localStorage
+                    localStorage.setItem('isAdminLoggedIn', 'true');
+                    // Redirect to Admin Dashboard
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    // Show error message
+                    errorMessage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

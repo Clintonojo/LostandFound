@@ -5,17 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Questions Guide</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Navigation Bar Styles */
+        .navbar {
+            background-color: green;
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-list li {
+            margin: 0 10px;
+        }
+
+        .nav-list a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav-list a:hover {
+            color: #ffdd57;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <ul class="nav-list">
-            <li><a href="home.html">Home</a></li>
-            <li><a href="submit-item.html">Submit Item</a></li>
-            <li><a href="map.html">Map</a></li>
-            <li><a href="my-account.html">My Account</a></li>
-            <li><a href="logout.html">Logout</a></li>
-        </ul>
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="submit-item.html">Submit Item</a></li>
+                <li><a href="map.html">Map</a></li>
+                <li><a href="my-account.html">My Account</a></li>
+                <li><a href="logout.html">Logout</a></li>
+                <li><a href="admin.html">Admin Dashboard</a></li>
+            </ul>
+        </div>
     </nav>
     <!-- Header Section -->
     <header class="sq-header">

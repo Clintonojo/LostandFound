@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item History</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional styling for the history page */
+        .search-filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        #searchBar, #filterCategory {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 250px;
+        }
+
+        #historyContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .item-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .item-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-card h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .item-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .no-items {
+            text-align: center;
+            font-size: 18px;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>History of Added Items</h1>
+        <p>Search and filter through the list of items you’ve added.</p>
+    </header>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-container">
+        <input type="text" id="searchBar" placeholder="Search items by name or description">
+        <select id="filterCategory">
+            <option value="">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="accessories">Accessories</option>
+            <option value="uncategorized">Uncategorized</option>
+        </select>
+    </div>
+
+    <!-- History Container -->
+    <div id="historyContainer"></div>
+
+    <footer class="sq-footer">
+        <p>&copy; 2025 Lost and Found. All rights reserved.</p>
+    </footer>
+
+    <script>
+        async function loadHistory() {
+            const response = await fetch('/items');
+            const items = await response.json();
+
+            // Assign categories dynamically based on item name or description
+            items.forEach(item => {
+                if (item.name.toLowerCase().includes('phone') || item.description.toLowerCase().includes('phone')) {
+                    item.category = 'electronics';
+                } else if (item.name.toLowerCase().includes('shirt') || item.description.toLowerCase().includes('shirt')) {
+                    item.category = 'clothing';
+                } else if (item.name.toLowerCase().includes('watch') || item.description.toLowerCase().includes('watch')) {
+                    item.category = 'accessories';
+                } else {
+                    item.category = 'uncategorized'; // Default category
+                }
+            });
+
+            submittedItems = items; // Store items globally
+            displayItems(items);
+        }
+
+        function displayItems(items) {
+            const container = document.getElementById('historyContainer');
+            if (items.length === 0) {
+                container.innerHTML = '<p class="no-items">No items found.</p>';
+                return;
+            }
+            container.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <p><strong>Category:</strong> ${item.category || 'Uncategorized'}</p>
+                    <p><strong>Location:</strong> ${item.latitude}, ${item.longitude}</p>
+                    <p><strong>Phone:</strong> ${item.phone_number}</p>
+                </div>
+            `).join('');
+        }
+
+        function filterItems() {
+            const search = document.getElementById('searchBar').value.toLowerCase();
+            const category = document.getElementById('filterCategory').value;
+
+            const filteredItems = submittedItems.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(search) || item.description.toLowerCase().includes(search);
+                const matchesCategory = !category || item.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            displayItems(filteredItems);
+        }
+
+        document.getElementById('searchBar').addEventListener('input', filterItems);
+        document.getElementById('filterCategory').addEventListener('change', filterItems);
+
+        loadHistory();
+    </script>
+</body>
+</html>
